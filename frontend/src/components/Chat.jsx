@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import io from "socket.io-client";
 import axios from "axios";
 
-const socket = io("http://localhost:5000");
+const socket = io("http://localhost:5000https://pager-chat-application-gqz1.vercel.app/");
 
 function Chat() {
   const [channels, setChannels] = useState([]);
@@ -17,8 +17,8 @@ function Chat() {
 
   // Fetch Channels and Users
   useEffect(() => {
-    axios.get("http://localhost:5000/chat/channels").then((res) => setChannels(res.data.channels));
-    axios.get("http://localhost:5000/chat/users").then((res) => {
+    axios.get("https://pager-chat-application-gqz1.vercel.app/chat/channels").then((res) => setChannels(res.data.channels));
+    axios.get("https://pager-chat-application-gqz1.vercel.app/chat/users").then((res) => {
       setUsers(res.data.users.filter((user) => user.username !== username));
     });
 
@@ -34,11 +34,11 @@ function Chat() {
   useEffect(() => {
     if (selectedUser) {
       axios
-        .get(`http://localhost:5000/chat/messages?sender=${username}&receiver=${selectedUser}`)
+        .get(`https://pager-chat-application-gqz1.vercel.app/chat/messages?sender=${username}&receiver=${selectedUser}`)
         .then((res) => setMessages(res.data.messages));
     } else if (selectedChannel) {
       axios
-        .get(`http://localhost:5000/chat/messages?channel=${selectedChannel}`)
+        .get(`https://pager-chat-application-gqz1.vercel.app/chat/messages?channel=${selectedChannel}`)
         .then((res) => setMessages(res.data.messages));
     }
   }, [selectedUser, selectedChannel]);
@@ -73,7 +73,7 @@ function Chat() {
         channel: selectedChannel || null,
       };
 
-      await axios.post("http://localhost:5000/chat/messages", messageData);
+      await axios.post("https://pager-chat-application-gqz1.vercel.app/chat/messages", messageData);
       socket.emit("message", messageData); // Emit message to Socket.io
       setMessageInput("");
     } catch (error) {
@@ -85,7 +85,7 @@ function Chat() {
   const handleChannelCreation = async () => {
     if (!createChannel.trim()) return;
     try {
-      const response = await axios.post("http://localhost:5000/chat/channels", { channelname: createChannel });
+      const response = await axios.post("https://pager-chat-application-gqz1.vercel.app/chat/channels", { channelname: createChannel });
       setChannels([...channels, response.data.channel]);
       setCreateChannel("");
       setAddChannel(false);

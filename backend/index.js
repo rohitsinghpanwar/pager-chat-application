@@ -24,7 +24,7 @@ mongoose
   .then(() => console.log("Connected to MongoDB Atlas"))
   .catch((err) => console.error("Error connecting to MongoDB:", err));
 
-app.use(cors({ origin: true, credentials: true }));
+app.use(cors({ origin: "https://pager-chat-application.vercel.app/",methods: "GET,POST",credentials: true }));
 app.use(express.json());
 
 // **🔹 Online Users Tracking**
@@ -55,7 +55,9 @@ io.on("connection", (socket) => {
     console.log("A user disconnected");
   });
 });
-
+app.get("/", (req, res) => {
+  res.send("Backend is up and running!");
+});
 // **🔹 User Signup**
 app.post("/signup", async (req, res) => {
   const { username, email, password } = req.body;
