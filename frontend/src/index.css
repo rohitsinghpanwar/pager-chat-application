@@ -1,0 +1,171 @@
+#homepage h1{
+    color: blueviolet;
+    font-size: 6rem;
+    font-style: italic;
+}
+#homepage{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    background-color: burlywood;
+    padding: 2rem;
+    border-radius: 0.5rem;
+}
+#homepage button{
+    background-color: khaki;
+    font-size: xx-large;
+    color: black;
+    font-style: oblique;
+    border-radius: 0.5rem;
+    font-weight: 500;
+
+}
+.signupcontainer, .logincontainer{
+    background-color: burlywood;
+    border: 2px solid rgb(10, 9, 22);
+    border-radius: 1rem;
+    display: flex;
+    flex-direction: column;
+    padding: 0.2rem;
+    
+}
+form{
+    padding: 1rem;
+    font-size: x-large;
+    font-style: italic;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    border-bottom: 2px solid black;
+    margin-bottom: 0.5rem;
+
+}
+.signupcontainer input{
+    height: 1.5rem;
+    border-radius: 10px;
+}
+button{
+    font-size: large;
+    font-style: italic;
+    padding: 0.5rem;
+    border-radius: 0.8rem;
+    background-color: bisque;
+}
+.messagecontainer{
+    border: 2px solid black;
+    border-radius: 1rem;
+    padding: 1rem;
+    width: 80vw;
+    
+    
+}
+#header{
+    display: flex;
+    color:gray;
+    align-items: center;
+    justify-content: space-between;
+    font-style: italic;
+    font-size: x-large;
+    
+}
+#messagedisplay{
+    display: flex;
+    border: 2px solid black;
+
+}
+#messages{
+ list-style: none;
+ height: 30vh;
+ overflow:scroll;
+ font-size: large;
+ width: 50vw;
+ 
+}
+#usersection{
+    font-style: italic;
+    border-right: 2px solid black;
+    
+}
+#usersection li{
+    list-style:decimal;
+    font-style: normal;
+    font-size: larger;
+    font-weight: 600;
+}
+#rooms{
+    border-bottom: 2px solid black;
+    display: flex;
+    flex-direction: column;
+    padding: 0.5rem;
+    
+}
+#users{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+#Messagesection{
+    color: blueviolet;
+    padding: 1rem;
+    font-family: cursive;
+    width: 50vw;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+#Messagesection input{
+    height: 2rem;
+    border-radius: 0.5rem;
+    width: 28vw;
+
+}
+#Messagesection h1{
+    color: gray;
+
+
+}
+#messages {
+    list-style-type: none;
+    padding: 0;
+  }
+  
+  #messages li {
+    display: flex;
+    margin: 10px 0;
+    
+  }
+  
+  #messages li.sender {
+    justify-content: flex-end;
+    text-align: right;
+  }
+  
+  #messages li.receiver {
+    justify-content: flex-start;
+    text-align: left;
+  }
+  
+  #messages li strong {
+    font-weight: bold;
+  }
+  
+  #messages li.sender, #messages li.receiver {
+    max-width: 70%;
+    padding: 10px;
+    border-radius: 10px;
+  }
+  
+  #messages li.sender {
+    background-color: #967e35;
+    color: white;
+  }
+  
+  #messages li.receiver {
+    background-color: #f1f1f1;
+    color: black;
+  }
+#channel{
+    display: flex;
+    padding: 0.2rem;
+}  
