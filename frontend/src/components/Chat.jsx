@@ -17,10 +17,13 @@ function Chat() {
 
   // Fetch Channels and Users
   useEffect(() => {
-    axios.get("https://pager-chat-application-gqz1.vercel.app/chat/channels").then((res) => setChannels(res.data.channels));
-    axios.get("https://pager-chat-application-gqz1.vercel.app/chat/users").then((res) => {
-      setUsers(res.data.users.filter((user) => user.username !== username));
-    });
+    axios.get("https://pager-chat-application-gqz1.vercel.app/chat/channels")
+      .then((res) => setChannels(res.data.channels));
+    
+    axios.get("https://pager-chat-application-gqz1.vercel.app/chat/users")
+      .then((res) => {
+        setUsers(res.data.users.filter((user) => user.username !== username));
+      });
 
     // Notify server that this user is online
     socket.emit("userConnected", username);
@@ -148,10 +151,7 @@ function Chat() {
             <ul id="messages">
               {messages.length > 0 ? (
                 messages.map((msg, index) => (
-                  <li
-                    key={index}
-                    className={msg.sender === username ? "sender" : "receiver"}
-                  >
+                  <li key={index} className={msg.sender === username ? "sender" : "receiver"}>
                     <strong>{msg.sender}: </strong> {msg.message}
                   </li>
                 ))

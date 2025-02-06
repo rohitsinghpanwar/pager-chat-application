@@ -24,10 +24,7 @@ mongoose
   .then(() => console.log("Connected to MongoDB Atlas"))
   .catch((err) => console.error("Error connecting to MongoDB:", err));
 
-app.use(cors(
-  { origin: "https://pager-chat-application.vercel.app/", 
-  methods: "GET,POST", 
-  credentials: true }));
+app.use(cors({ origin: "https://pager-chat-application.vercel.app/", methods: "GET,POST", credentials: true }));
 app.use(express.json());
 
 // **🔹 Online Users Tracking**
@@ -58,9 +55,11 @@ io.on("connection", (socket) => {
     console.log("A user disconnected");
   });
 });
+
 app.get("/", (req, res) => {
   res.send("Backend is up and running!");
 });
+
 // **🔹 User Signup**
 app.post("/signup", async (req, res) => {
   const { username, email, password } = req.body;
@@ -124,59 +123,20 @@ app.get("/chat/users", async (req, res) => {
   }
 });
 
-// **🔹 Send Message (Fixed)**
-app.post("/chat/messages", async (req, res) => {
-  const { sender, receiver, message, channel } = req.body;
-  try {
-    let newMessage;
-
-    if (channel) {
-      // **Save Channel Message**
-      newMessage = new Message({ sender, message, channel, receiver: null });
-    } else {
-      // **Save Direct Message**
-      newMessage = new Message({ sender, receiver, message, channel: null });
-    }
-
-    await newMessage.save();
-    res.status(200).json({ message: "Message sent successfully", newMessage });
-
-    // **Emit Message to Respective Channel or User**
-    if (channel) {
-      io.emit(`channel-${channel}`, newMessage); // Emit to channel
-    } else {
-      io.emit("reply", newMessage); // Emit for direct message
-    }
-
-  } catch (error) {
-    res.status(500).json({ message: "Error sending message", error });
-  }
-});
-
-// **🔹 Fetch Messages Between Users OR Channels (Fixed)**
+// **🔹 Fetch Messages**
 app.get("/chat/messages", async (req, res) => {
   const { sender, receiver, channel } = req.query;
+  let query = {};
+  if (sender && receiver) query = { $or: [{ sender, receiver }, { sender: receiver, receiver: sender }] };
+  if (channel) query = { channel };
   try {
-    let messages;
-
-    if (channel) {
-      // **Fetch Messages for Channel**
-      messages = await Message.find({ channel }).sort({ createdAt: 1 });
-    } else {
-      // **Fetch Direct Messages Between Users**
-      messages = await Message.find({
-        $or: [
-          { sender, receiver },
-          { sender: receiver, receiver: sender },
-        ],
-      }).sort({ createdAt: 1 });
-    }
-
+    const messages = await Message.find(query);
     res.status(200).json({ messages });
   } catch (error) {
     res.status(500).json({ message: "Error fetching messages", error });
   }
 });
 
-const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => console.log(`Server running on PORT ${PORT}`));
+server.listen(process.env.PORT || 5000, () => {
+  console.log("Server is running on port 5000");
+});
