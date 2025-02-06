@@ -13,18 +13,21 @@ dotenv.config();
 const server = http.createServer(app);
 const io = new Server(server, {
   cors: {
-    origin: "https://pager-chat-application.vercel.app/", 
+    origin: "https://pager-chat-application.vercel.app/",
     methods: ["GET", "POST"],
+    credentials: true
   },
 });
-const port = 5000;
 
 mongoose
   .connect(process.env.MONGO_URI, { useNewUrlParser: true, useUnifiedTopology: true })
   .then(() => console.log("Connected to MongoDB Atlas"))
   .catch((err) => console.error("Error connecting to MongoDB:", err));
 
-app.use(cors({ origin: "https://pager-chat-application.vercel.app/",methods: "GET,POST",credentials: true }));
+app.use(cors(
+  { origin: "https://pager-chat-application.vercel.app/", 
+  methods: "GET,POST", 
+  credentials: true }));
 app.use(express.json());
 
 // **🔹 Online Users Tracking**
@@ -110,10 +113,12 @@ app.get("/chat/channels", async (req, res) => {
 app.get("/chat/users", async (req, res) => {
   try {
     const users = await User.find();
-    res.status(200).json({ users: users.map((user) => ({
-      ...user.toObject(),
-      isOnline: !!onlineUsers[user.username], // Check if the user is online
-    })) });
+    res.status(200).json({
+      users: users.map((user) => ({
+        ...user.toObject(),
+        isOnline: !!onlineUsers[user.username], // Check if the user is online
+      }))
+    });
   } catch (error) {
     res.status(500).json({ message: "Error fetching users", error });
   }
@@ -124,7 +129,7 @@ app.post("/chat/messages", async (req, res) => {
   const { sender, receiver, message, channel } = req.body;
   try {
     let newMessage;
-    
+
     if (channel) {
       // **Save Channel Message**
       newMessage = new Message({ sender, message, channel, receiver: null });
@@ -153,7 +158,7 @@ app.get("/chat/messages", async (req, res) => {
   const { sender, receiver, channel } = req.query;
   try {
     let messages;
-    
+
     if (channel) {
       // **Fetch Messages for Channel**
       messages = await Message.find({ channel }).sort({ createdAt: 1 });
@@ -173,6 +178,5 @@ app.get("/chat/messages", async (req, res) => {
   }
 });
 
-server.listen(port, () => {
-  console.log(`App listening on http://localhost:${port}`);
-});
+const PORT = process.env.PORT || 3000;
+app.listen(PORT, () => console.log(`Server running on PORT ${PORT}`));
