@@ -63,10 +63,6 @@ button{
     border-radius: 1rem;
     padding: 1rem;
     width: 80vw;
-    position: relative;
-    left: 15%;
-    
-    
 }
 #header{
     display: flex;
