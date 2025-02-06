@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import io from "socket.io-client";
 import axios from "axios";
 
-const socket = io("http://localhost:5000https://pager-chat-application-gqz1.vercel.app/");
+const socket = io("https://pager-chat-application-gqz1.vercel.app/");
 
 function Chat() {
   const [channels, setChannels] = useState([]);

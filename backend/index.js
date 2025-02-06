@@ -13,7 +13,7 @@ dotenv.config();
 const server = http.createServer(app);
 const io = new Server(server, {
   cors: {
-    origin: "http://localhost:5173", // Adjust frontend URL if needed
+    origin: "https://pager-chat-application.vercel.app/", 
     methods: ["GET", "POST"],
   },
 });

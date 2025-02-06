@@ -21,7 +21,7 @@ function Login() {
     e.preventDefault();
   
     try {
-      const response = await axios.post("http://localhost:5000/login", formdata);
+      const response = await axios.post("https://pager-chat-application.vercel.app/login", formdata);
       alert('Login successfully')
       localStorage.setItem('username',formdata.username)
       navigate("/chat"); 

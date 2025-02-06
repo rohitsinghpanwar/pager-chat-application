@@ -18,7 +18,7 @@ function Signup() {
     const handleSubmit = async (e) => {
         e.preventDefault();
         try {
-            await axios.post("http://localhost:5000/signup", formdata);
+            await axios.post("https://pager-chat-application.vercel.app/signup", formdata);
             alert("form submitted successfully");
             localStorage.setItem('username',formdata.username)
             navigate("/chat")
