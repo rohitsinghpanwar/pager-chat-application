@@ -2,7 +2,9 @@ import React, { useState, useEffect } from "react";
 import io from "socket.io-client";
 import axios from "axios";
 
-const socket = io("https://pager-chat-application-gqz1.vercel.app/");
+const socket = io("https://pager-chat-application-gqz1.vercel.app/", {
+  withCredentials: true,  // Allow credentials like cookies to be sent
+});
 
 function Chat() {
   const [channels, setChannels] = useState([]);
@@ -17,13 +19,10 @@ function Chat() {
 
   // Fetch Channels and Users
   useEffect(() => {
-    axios.get("https://pager-chat-application-gqz1.vercel.app/chat/channels")
-      .then((res) => setChannels(res.data.channels));
-    
-    axios.get("https://pager-chat-application-gqz1.vercel.app/chat/users")
-      .then((res) => {
-        setUsers(res.data.users.filter((user) => user.username !== username));
-      });
+    axios.get("https://pager-chat-application-gqz1.vercel.app/chat/channels").then((res) => setChannels(res.data.channels));
+    axios.get("https://pager-chat-application-gqz1.vercel.app/chat/users").then((res) => {
+      setUsers(res.data.users.filter((user) => user.username !== username));
+    });
 
     // Notify server that this user is online
     socket.emit("userConnected", username);
@@ -93,83 +92,68 @@ function Chat() {
       setCreateChannel("");
       setAddChannel(false);
     } catch (error) {
-      console.log("Error creating channel:", error);
+      console.error("Error creating channel:", error);
     }
   };
 
   return (
-    <div className="messagecontainer">
-      <div id="header">
-        <h1>Pager</h1>
-        <h1>Welcome, {username}</h1>
-      </div>
-      <div id="messagedisplay">
-        <div id="usersection">
-          <div id="rooms">
-            <h1>Chat Rooms</h1>
-            <ul>
-              {channels.map((channel, index) => (
-                <li key={index} onClick={() => { setSelectedChannel(channel.channelname); setSelectedUser(null); }}>
-                  {channel.channelname}
-                </li>
-              ))}
-            </ul>
-            <button onClick={() => setAddChannel(true)}>Add Channel</button>
-            {addChannel && (
-              <div id="channel">
-                <input
-                  type="text"
-                  value={createChannel}
-                  required
-                  placeholder="Enter channel name..."
-                  onChange={(e) => setCreateChannel(e.target.value)}
-                />
-                <button onClick={handleChannelCreation}>Create</button>
-              </div>
-            )}
-          </div>
-          <div id="users">
-            <h2>Users</h2>
-            <ul>
-              {users.map((user, index) => (
-                <li key={index} onClick={() => { setSelectedUser(user.username); setSelectedChannel(null); }}>
-                  {user.username}
-                  <span style={{ color: user.isOnline ? "green" : "red", marginLeft: "10px" }}>
-                    {user.isOnline ? " (Online)" : " (Offline)"}
-                  </span>
-                </li>
-              ))}
-            </ul>
-          </div>
-        </div>
-
-        {(selectedUser || selectedChannel) && (
-          <div id="Messagesection">
-            <h1>
-              {selectedUser ? `Messaging with ${selectedUser}` : `Channel: ${selectedChannel}`}
-            </h1>
-            <ul id="messages">
-              {messages.length > 0 ? (
-                messages.map((msg, index) => (
-                  <li key={index} className={msg.sender === username ? "sender" : "receiver"}>
-                    <strong>{msg.sender}: </strong> {msg.message}
-                  </li>
-                ))
-              ) : (
-                <p>Start messaging...</p>
-              )}
-            </ul>
-            <div>
-              <input
-                type="text"
-                value={messageInput}
-                onChange={(e) => setMessageInput(e.target.value)}
-                placeholder="Type a message..."
-              />
-              <button onClick={handleSendMessage}>Send</button>
-            </div>
+    <div>
+      <h1>Welcome, {username}</h1>
+      <div>
+        <button onClick={() => setAddChannel(!addChannel)}>
+          {addChannel ? "Cancel" : "Create Channel"}
+        </button>
+        {addChannel && (
+          <div>
+            <input
+              type="text"
+              placeholder="Channel Name"
+              value={createChannel}
+              onChange={(e) => setCreateChannel(e.target.value)}
+            />
+            <button onClick={handleChannelCreation}>Create</button>
           </div>
         )}
+      </div>
+
+      <div>
+        <h2>Channels</h2>
+        {channels.map((channel) => (
+          <div key={channel._id}>
+            <button onClick={() => setSelectedChannel(channel.channelname)}>
+              {channel.channelname}
+            </button>
+          </div>
+        ))}
+      </div>
+
+      <div>
+        <h2>Users</h2>
+        {users.map((user) => (
+          <div key={user.username}>
+            <button onClick={() => setSelectedUser(user.username)}>
+              {user.username} {user.isOnline ? "(Online)" : "(Offline)"}
+            </button>
+          </div>
+        ))}
+      </div>
+
+      <div>
+        <h3>Messages</h3>
+        <div>
+          {messages.map((msg, index) => (
+            <div key={index}>
+              <strong>{msg.sender}</strong>: {msg.message}
+            </div>
+          ))}
+        </div>
+        <input
+          type="text"
+          value={messageInput}
+          onChange={(e) => setMessageInput(e.target.value)}
+          placeholder="Type a message"
+        />
+        <button onClick={handleSendMessage}>Send</button>
       </div>
     </div>
   );

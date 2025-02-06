@@ -11,11 +11,22 @@ const Message = require("./mongo_models/Message");
 
 dotenv.config();
 const server = http.createServer(app);
+
+// CORS Configuration
+const corsOptions = {
+  origin: "https://pager-chat-application.vercel.app", // Your frontend domain
+  methods: ["GET", "POST"],
+  credentials: true, // Allow credentials like cookies to be sent
+};
+
+app.use(cors(corsOptions));
+
+// Socket.io configuration for handling CORS
 const io = new Server(server, {
   cors: {
-    origin: "https://pager-chat-application.vercel.app/",
+    origin: "https://pager-chat-application.vercel.app", // Your frontend domain
     methods: ["GET", "POST"],
-    credentials: true
+    credentials: true, // Allow credentials
   },
 });
 
@@ -24,7 +35,6 @@ mongoose
   .then(() => console.log("Connected to MongoDB Atlas"))
   .catch((err) => console.error("Error connecting to MongoDB:", err));
 
-app.use(cors({ origin: "https://pager-chat-application.vercel.app/", methods: "GET,POST", credentials: true }));
 app.use(express.json());
 
 // **🔹 Online Users Tracking**
@@ -54,10 +64,6 @@ io.on("connection", (socket) => {
   socket.on("disconnect", () => {
     console.log("A user disconnected");
   });
-});
-
-app.get("/", (req, res) => {
-  res.send("Backend is up and running!");
 });
 
 // **🔹 User Signup**
@@ -116,27 +122,60 @@ app.get("/chat/users", async (req, res) => {
       users: users.map((user) => ({
         ...user.toObject(),
         isOnline: !!onlineUsers[user.username], // Check if the user is online
-      }))
+      })),
     });
   } catch (error) {
     res.status(500).json({ message: "Error fetching users", error });
   }
 });
 
+// **🔹 Send Message**
+app.post("/chat/messages", async (req, res) => {
+  const { sender, receiver, message, channel } = req.body;
+  try {
+    let newMessage;
+
+    if (channel) {
+      newMessage = new Message({ sender, message, channel, receiver: null });
+    } else {
+      newMessage = new Message({ sender, receiver, message, channel: null });
+    }
+
+    await newMessage.save();
+    res.status(200).json({ message: "Message sent successfully", newMessage });
+
+    if (channel) {
+      io.emit(`channel-${channel}`, newMessage); // Emit to channel
+    } else {
+      io.emit("reply", newMessage); // Emit for direct message
+    }
+  } catch (error) {
+    res.status(500).json({ message: "Error sending message", error });
+  }
+});
+
 // **🔹 Fetch Messages**
 app.get("/chat/messages", async (req, res) => {
   const { sender, receiver, channel } = req.query;
-  let query = {};
-  if (sender && receiver) query = { $or: [{ sender, receiver }, { sender: receiver, receiver: sender }] };
-  if (channel) query = { channel };
   try {
-    const messages = await Message.find(query);
+    let messages;
+
+    if (channel) {
+      messages = await Message.find({ channel }).sort({ createdAt: 1 });
+    } else {
+      messages = await Message.find({
+        $or: [
+          { sender, receiver },
+          { sender: receiver, receiver: sender },
+        ],
+      }).sort({ createdAt: 1 });
+    }
+
     res.status(200).json({ messages });
   } catch (error) {
     res.status(500).json({ message: "Error fetching messages", error });
   }
 });
 
-server.listen(process.env.PORT || 5000, () => {
-  console.log("Server is running on port 5000");
-});
+const PORT = process.env.PORT || 3000;
+server.listen(PORT, () => console.log(`Server running on PORT ${PORT}`));
