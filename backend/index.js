@@ -65,7 +65,9 @@ io.on("connection", (socket) => {
     console.log("A user disconnected");
   });
 });
-
+app.get("/",(req,res)=>{
+  res.send("backend is up and running")
+})
 // **🔹 User Signup**
 app.post("/signup", async (req, res) => {
   const { username, email, password } = req.body;
