@@ -77,7 +77,7 @@ function Chat() {
       };
 
       await axios.post("https://pager-chat-application.onrender.com/chat/messages", messageData);
-      socket.emit("message", messageData); // Emit message to Socket.io
+       // Emit message to Socket.io
       setMessageInput("");
     } catch (error) {
       console.error("Error sending message:", error);
@@ -108,12 +108,16 @@ function Chat() {
           <div id="rooms">
             <h1>Chat Rooms</h1>
             <ul>
-              {channels.map((channel, index) => (
-                <li key={index} onClick={() => { setSelectedChannel(channel.channelname); setSelectedUser(null); }}>
-                  {channel.channelname}
-                </li>
-              ))}
-            </ul>
+  {channels.map((channel, index) => (
+    <li
+      key={index}
+      onClick={() => { setSelectedChannel(channel.channelname); setSelectedUser(null); }}
+      className={selectedChannel === channel.channelname ? "selected" : ""}
+    >
+      {channel.channelname}
+    </li>
+  ))}
+</ul>
             <button onClick={() => setAddChannel(true)}>Add Channel</button>
             {addChannel && (
               <div id="channel">
@@ -131,15 +135,19 @@ function Chat() {
           <div id="users">
             <h2>Users</h2>
             <ul>
-              {users.map((user, index) => (
-                <li key={index} onClick={() => { setSelectedUser(user.username); setSelectedChannel(null); }}>
-                  {user.username}
-                  <span style={{ color: user.isOnline ? "green" : "red", marginLeft: "10px" }}>
-                    {user.isOnline ? " (Online)" : " (Offline)"}
-                  </span>
-                </li>
-              ))}
-            </ul>
+  {users.map((user, index) => (
+    <li
+      key={index}
+      onClick={() => { setSelectedUser(user.username); setSelectedChannel(null); }}
+      className={selectedUser === user.username ? "selected" : ""}
+    >
+      {user.username}
+      <span style={{ color: user.isOnline ? "green" : "red", marginLeft: "10px" }}>
+        {user.isOnline ? " (Online)" : " (Offline)"}
+      </span>
+    </li>
+  ))}
+</ul>
           </div>
         </div>
 
